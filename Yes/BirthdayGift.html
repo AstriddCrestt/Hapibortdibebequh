@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ffe6ff, #e0c8ff, #c7dcff);
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        #container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+        }
+
+        #bearGif {
+            width: 70%;
+            max-width: 280px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+        #question {
+            font-size: clamp(16px, 5vw, 22px);
+            color: #4a306d;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        #buttons {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: clamp(14px, 4vw, 18px);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #yesBtn {
+            background-color: #ae8bff;
+            color: white;
+        }
+
+        #noBtn {
+            background-color: #ff8ba0;
+            color: white;
+        }
+        
+        #transitionScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #da86da, #9f73da, #6e94d6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: 1s ease, background 2s ease;
+        }
+
+        #Flowers {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .Petal {
+            position: absolute;
+            top: -40px;
+            width: 22px;
+            height: 22px;
+            border-radius: 60% 40% 60% 40% / 70% 50% 60% 40%;
+            opacity: 0.9;
+            animation: fall linear;
+            filter: blur(0.2px);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateX(0) translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateX(25px) translateY(55vh) rotate(180deg);
+            }
+            100% {
+                transform: translateX(-25px) translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Box container */
+        .box {
+            width: clamp(130px, 35vw, 180px);
+            height: clamp(130px, 35vw, 180px);
+            position: relative;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 900px;
+            transition: transform 0.4s ease;
+        }
+
+        .lid {
+            width: 104%;
+            height: clamp(35px, 10vw, 50px);
+            background: #ff4d6d;
+            border-radius: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.25);
+            transition: transform 1.2s ease-in-out;
+            z-index: 10;
+        }
+
+        /* Ribbon on top */
+        .lid::before {
+            content:"";
+            width: 28px;
+            height: 100%;
+            background: #ff3355;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 6px;
+        }
+
+        /* Box base */
+        .base {
+            width: 100%;
+            height: calc(100% - clamp(35px, 10vw, 50px));
+            background: white;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            bottom: 0;
+            border: 3px solid #ff4d6d;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+        }
+
+        /* Ribbon on base */
+        .base::before {
+            content:"";
+            width: 28px;
+            height: 100%;
+            background: #ff3355;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 6px;
+        }
+
+        /* Cute bow */
+        .lid::after {
+            content:"🎀";
+            font-size: 28px;
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* REALISTIC LID REMOVAL */
+        .box.open .lid {
+            animation: liftAndDrop 1.2s forwards ease-in-out;
+        }
+
+        /* Keyframes for realistic lid movement */
+        @keyframes liftAndDrop {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            40% {
+                transform: translateY(-60px) rotate(0deg); /* lift up */
+            }
+            70% {
+                transform: translateY(-40px) rotate(12deg); /* slight tilt in air */
+            }
+            100% {
+                transform: translate(80px, 20px) rotate(25deg); /* falls off to the right */
+            }
+        }
+
+        .sparkle-container {
+            position: absolute;
+            width: clamp(150px, 40vw, 230px);
+            height: clamp(150px, 40vw, 230px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 20;
+            overflow: visible;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #fff 0%, #ffd6ff 40%, #ff69b4 70%);
+            clip-path: polygon(
+                50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%
+            );
+            animation: sparkleTwinkle 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 6px #fff);
+        }
+
+        @keyframes sparkleTwinkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            40% {
+                opacity: 1;
+            }
+            60% {
+                transform: scale(1.4) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #boxGlow {
+            position: absolute;
+            width: clamp(200px, 55vw, 300px);
+            height: clamp(200px, 55vw, 300px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle,
+                rgba(255, 220, 120, 0.9) 0%,   /* warm gold core */
+                rgba(255, 160, 200, 0.6) 35%, /* soft pink */
+                rgba(255, 120, 220, 0.35) 60%,/* dreamy purple edge */
+                rgba(255, 255, 255, 0) 100%
+            );
+            border-radius: 50%;
+            filter: blur(30px);
+            animation: glowPulse 3s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes glowPulse {
+            0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50%  { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+        }
+
+        #birthdayHeader {
+            position: fixed;
+            top: 12x;                    /* distance from top of the screen */
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+            padding: 8px 16px;
+            font-size: clamp(20px, 6vw, 36px);
+            font-weight: 700;
+            text-align: center;
+            font-family: 'Georgia', cursive;
+            color: #fff;
+            pointer-events: none;
+            z-index: 60;                 /* above everything else */
+
+            /* Soft glowing text */
+            text-shadow:
+                0 0 8px rgba(255, 180, 120, 0.9),
+                0 0 16px rgba(255, 140, 200, 0.85),
+                0 0 28px rgba(255, 220, 120, 0.7);
+
+            /* subtle entrance animation */
+            animation: headerGlow 3s ease-in-out infinite, headerSlideIn 0.6s ease-out 0s 1;
+        }
+
+        @keyframes headerGlow {
+            0% {
+                text-shadow:
+                    0 0 6px rgba(255, 180, 255, 0.6),
+                    0 0 12px rgba(255, 120, 200, 0.6),
+                    0 0 22px rgba(255, 200, 120, 0.7);
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                text-shadow:
+                    0 0 14px rgba(255, 200, 255, 1),
+                    0 0 24px rgba(255, 150, 220, 1),
+                    0 0 40px rgba(255, 220, 140, 1);
+                transform: translateX(-50%) scale(1.05);
+            }
+            100% {
+                text-shadow:
+                    0 0 6px rgba(255, 180, 255, 0.6),
+                    0 0 12px rgba(255, 120, 200, 0.6),
+                    0 0 22px rgba(255, 200, 120, 0.7);
+                transform: translateX(-50%) scale(1);
+            }
+        }
+
+        @keyframes headerSlideIn {
+            0%   { transform: translateX(-50%) translateY(-18px); opacity: 0; }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* responsive sizes */
+        @media (max-width: 480px) {
+            #birthdayHeader { font-size: 20px; top: 12px; padding: 6px 12px; }
+        }
+        @media (min-width: 1200px) {
+            #birthdayHeader { font-size: 36px; top: 28px; }
+        }
+
+        #letterWrapper {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            opacity: 0;
+            transform: translateY(40px);
+            transition: 0.8s ease;
+        }
+
+        #letter {
+            width: clamp(240px, 70vw, 320px);
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            overflow: visible;
+            transform-style: preserve-3d;
+        }
+
+        #letter.folded {
+            height: 80px;
+            position: relative;
+        }
+
+        .letter-top {
+            background: #ffe5f2;
+            height: 80px;
+            width: 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+            box-shadow: inset 0 -6px 10px rgba(0,0,0,0.1);
+        }
+
+        .letter-body {
+            padding: 20px;
+            font-size: 15px;
+            color: #4a306d;
+            line-height: 1.5;
+            background: white;
+            display: none;
+
+            max-height: 55vh;      /* limit height */
+            overflow-y: auto;       /* enable scroll */
+            scrollbar-width: thin;  /* nicer scrollbar (Firefox) */
+        }
+
+        #letter.unfolded {
+            animation: unfold 0.7s forwards ease-out;
+            height: auto;
+        }
+
+        @keyframes unfold {
+            0% { height: 80px; }
+            100% { height: max-content; }
+        }
+
+        #letter.unfolded .letter-body {
+            display: block;
+        }
+
+        #giftBox {
+            position:absolute; 
+            top:50%; 
+            left:50%; 
+            transform:translate(-50%, -50%); 
+            perspective:800px;
+            z-index: 30;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <img id="bearGif" src="Neutral.gif">
+        <h1 id="question">Ready for your Birthday Surprise baby ko? hehe</h1>
+
+        <div id="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+    <div id="transitionScreen">
+        <div id="Flowers"></div>
+        <h1 id="birthdayHeader">Happy Birthday My Love!! 💖💖</h1>
+        <div id="giftContainer">
+            <div class="sparkle-container" id="sparkles"></div>
+            <div id="boxGlow"></div>
+            <div id="giftBox" class="box">
+                <div class="lid"></div>
+                <div class="base"></div>
+            </div>
+            <div id="letterWrapper">
+                <div id="letter" class="folded">
+                    <div class="letter-top"></div>
+                    <div class="letter-body">
+                        <p>Dear Baby,</p>
+                        <p>
+                            Happy Birthday my love! 🎉💖  <br>
+                            18 ka na todayy bawal mo muna ako hawakan for 1 year, child aboose yan, charottt.
+                            kidding aside.. <br>
+                            Happy birthday po sa'yo, una sa lahat gusto kong magsorry sa pag iwan po sayo,
+                            nasaktan kita sa ginawa kong yun and I really really am sorry for that po,
+                            although wala man akong material gift or nabigay na cake, pero I'm here formally coming back
+                            because I love you, I've thought about it habang hiwalay tayo,
+                            and I've realized na hindi ko pala talaga kayang wala ka. Mahal na mahal po kita kahit mayroon tayong mga hindi pagkakaintindihan minsan, nasasaktan natin yung isa't isa sa mga nasasabi natin pero kahit ganun man ay hindi nababago nun yung nararamdaman ko, oo umalis man ako pero kahit ganun ay mahal padin kita. Gusto ko lang din malaman mo na hindi ako bumabalik dahil birthday mo lang ngayon. 
+                            Bumabalik ako kasi na-realize ko na ikaw yung tahanan ko. 
+                            Ikaw yung araw-araw na hinahanap ko, ikaw yung gusto ko makasama sa lahat ng good days 
+                            and bad days. Hindi man ako perpekto, pero pangako, mas pagbubutihin ko. 
+                            Sa tuwing naaalala kita noong hindi tayo nag uusap bigla bigla nalang akong nalulungkot, tapos kapag pumapasok sa isip ko na may makikilala kang bago o magkakaroon ka ng bagong bf mas lalo akong nawawala sa mood ko... kaya po ayokong mawala ka ulit, 
+                            salamat po kasi kahit ang tigas ng ulo ko minsan, minahal mo pa rin ako. Thank you kasi kahit nagkagulo tayo, hindi mo ako binitawan sa puso mo. 
+                            You deserve so much love, care, and effort, and I want to give you that. 
+                            I want to grow with you, choose you every day, and be better for you.
+                            Sana today maging simula ulit ng mas maayos, mas masaya, 
+                            at mas healthy na tayo. 
+                            Promise ko na mas magiging gentle, mas patient, mas understanding ako. 
+                            Hindi ko sinasabing magiging perfect tayo, pero gusto ko yung journey natin, 
+                            yung tawa mo, yung kulit mo, lahat. 
+                            Gusto ko pa rin ikaw yung makakausap ko bago matulog, 
+                            ikaw yung makikita ko sa mga special days, 
+                            at ikaw yung makakasama ko sa mga bagay na gusto pa nating ma-achieve.
+                            Sana po palagi mong isipin na kahit gaano pa tayo kalayo sa isa't isa ay sa'yo padin ako uuwi kahit anong mangyari man, mag away man yan, hindi man magpansinan, sayong sa'yo lang po ako. <br>
+                            I love you, always. Hindi ako aalis ulit.
+                        </p>
+                        <p>I love you so, so much 💕</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <audio id="bgMusic" src="hapibortdi.mp3" loop></audio>
+    <audio id="giftMusic" src="GustoKita.mp3"></audio>
+    <!-- No Button + Question Change + Gif Change + Yes Btn size-->
+    <script>
+        const noBtn = document.getElementById("noBtn");
+        const yesBtn = document.getElementById("yesBtn");
+        const bearGif = document.getElementById("bearGif");
+        const question = document.getElementById("question");
+        const buttons = document.getElementById("buttons");
+
+        let stage = 0;
+
+        const gifStages = [
+            "Neutral.gif",
+            "s1.gif",
+            "s2.gif",
+            "s3.gif",
+            "s4.gif",
+            "s5.gif"
+        ];
+
+        const questions = [
+            "Ready for your Birthday Surprise baby ko? hehe",
+            "Sure ka? 🥺",
+            "Bakit no? 😢",
+            "Ayaw mo talaga? 😭",
+            "Sige na please 😔",
+            "Talaga? Wala nang no button 😤"
+        ];
+
+        // Trigger ONLY on click/tap
+        noBtn.addEventListener("click", nextStage);
+        noBtn.addEventListener("touchstart", nextStage);
+
+        function nextStage(e) {
+            e.preventDefault(); // prevents touch glitches
+            stage++;
+
+            if (stage > 5) stage = 5;
+
+            // Change GIF
+            bearGif.src = gifStages[stage];
+
+            // Change question
+            question.textContent = questions[stage];
+
+            // Grow YES button
+            yesBtn.style.transform = `scale(${1 + stage * 0.15})`;
+
+            // Move NO button unless final stage
+            if (stage < 5) {
+                moveButton();
+            } else {
+                noBtn.style.display = "none"; // remove NO button on final stage
+            }
+        }
+
+        function moveButton() {
+            const padding = 10;
+
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY * 0.8;
+
+            noBtn.style.position = "fixed";
+            noBtn.style.left = randomX + "px";
+            noBtn.style.top = randomY + "px";
+        }
+    </script>
+    <!-- Transition-->
+    <script>
+        const Yes = document.getElementById("yesBtn");
+
+        Yes.addEventListener("touchstart", StartTrnsition);
+        Yes.addEventListener("click", (e) => {
+            if (!('ontouchstart' in window)) StartTrnsition(e);
+        });
+
+        function StartTrnsition() {
+            document.getElementById("container").style.opacity = "0";
+
+            const Bg = document.getElementById("bgMusic");
+            Bg.volume = 1;
+            Bg.play();
+
+            setTimeout (() => {
+                document.getElementById("container").style.display = "none";
+
+                const t = document.getElementById("transitionScreen");            
+                t.style.opacity = "1";
+                t.style.pointerEvents = "auto";
+
+                startFlowerAnimation();
+            }, 500);
+        }
+
+        function startFlowerAnimation() {
+            const flowers = document.getElementById("Flowers");
+            
+            setInterval(() => {
+                const petal = document.createElement("div");
+                petal.classList.add("Petal");
+
+                const colors = [
+                    "radial-gradient(circle at 30% 30%, #ffe6ee, #ff9fc9)", // sakura pink
+                    "radial-gradient(circle at 30% 30%, #fff0d6, #ffb347)", // peach
+                    "radial-gradient(circle at 30% 30%, #ffffff, #ffd1dc)", // white blush
+                    "radial-gradient(circle at 30% 30%, #ffd6e8, #ff69b4)", // hot pink
+                    "radial-gradient(circle at 30% 30%, #fbeaff, #d28cff)"  // lavender
+                ];
+
+                petal.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                petal.style.left = Math.random() * 100 + "vw";
+                petal.style.animationDuration = (3 + Math.random() * 3) + "S";
+
+                flowers.appendChild(petal);
+                petal.style.transform = `rotate(${Math.random() * 360}deg) scale(${0.7 + Math.random() * 0.6})`;
+
+                setTimeout(() => petal.remove(), 6000);
+            }, 300);
+        }
+    </script>
+    <!-- Gift Box -->
+    <script>
+        const giftBox = document.getElementById("giftBox");
+
+        giftBox.addEventListener("click", openGift);
+        giftBox.addEventListener("touchstart", openGift);
+
+        function openGift() {
+            giftBox.classList.add("open");
+
+            const bgmoosic = document.getElementById("bgMusic");
+            const giftmoosic = document.getElementById("giftMusic")
+
+            let fade = setInterval(() => {
+                if (bgMusic.volume > 0.05) {
+                    bgMusic.volume -= 0.05;
+                } else {
+                    bgMusic.pause();
+                    clearInterval(fade);
+                }
+            }, 100);
+
+            // 🔊 Start second music after short delay
+            setTimeout(() => {
+                giftMusic.volume = 1;
+                giftMusic.play();
+            }, 500);
+
+            // ✨ Fade out sparkle + glow + box before showing the letter
+            document.getElementById("giftBox").style.opacity = "0";
+            document.getElementById("boxGlow").style.opacity = "0";
+            document.getElementById("sparkles").style.opacity = "0";
+
+            setTimeout(() => {
+                // OPTIONAL: fully remove from layout
+                document.getElementById("giftBox").style.display = "none";
+                document.getElementById("boxGlow").style.display = "none";
+                document.getElementById("sparkles").style.display = "none";
+
+                const letterWrapper = document.getElementById("letterWrapper");
+                const letter = document.getElementById("letter");
+
+                letterWrapper.style.opacity = "1";
+                letterWrapper.style.transform = "translateY(0)";
+
+                letter.classList.remove("folded");
+                letter.classList.add("unfolded");
+            }, 1200);
+        }
+    </script>
+    <!-- Sparkles -->
+    <script>
+        const sparkleContainer = document.getElementById("sparkles");
+
+        function createSparkle() {
+            const sparkle = document.createElement("div");
+            sparkle.classList.add("sparkle");
+
+            const size = 8 + Math.random() * 8;
+            sparkle.style.width = size + "px";
+            sparkle.style.height = size + "px";
+
+            sparkle.style.left = Math.random() * 100 + "%";
+            sparkle.style.top = Math.random() * 100 + "%";
+
+            sparkle.style.animationDuration = (1 + Math.random() * 1.5) + "s";
+
+            sparkleContainer.appendChild(sparkle);
+
+            setTimeout(() => sparkle.remove(), 2000);
+        }
+
+        setInterval(createSparkle, 90);
+    </script>
+</body>
+</html>
