@@ -558,12 +558,28 @@
         Yes.addEventListener("touchstart", StartTrnsition);
         Yes.addEventListener("click", StartTrnsition);
 
-        function StartTrnsition() {
-            Bg.volume = 1;
-            Bg.play();
+        function StartTrnsition(e) {
+            e.preventDefault();
+
+            // Start music safely within user gesture
+            Bg.volume = 0; // start from 0 for fade-in
+            Bg.play().catch(err => console.log("Autoplay blocked:", err));
+
+            // Smooth fade-in
+            let vol = 0;
+            const fadeIn = setInterval(() => {
+                if (vol < 0.3) {  // max volume
+                    vol += 0.02;
+                    Bg.volume = vol;
+                } else {
+                    clearInterval(fadeIn);
+                }
+            }, 200);
+
+            // Start transition
             document.getElementById("container").style.opacity = "0";
 
-            setTimeout (() => {
+            setTimeout(() => {
                 document.getElementById("container").style.display = "none";
 
                 const t = document.getElementById("transitionScreen");            
