@@ -556,15 +556,15 @@
         Yes.addEventListener("touchstart", StartTrnsition);
         Yes.addEventListener("click", (e) => {
             if (!('ontouchstart' in window)) StartTrnsition(e);
+            Bg.volume = 1;
+            Bg.play().catch(err => {
+                alert("Audio play failed: " + err);
+            });
         });
 
         function StartTrnsition() {
             document.getElementById("container").style.opacity = "0";
 
-            Bg.volume = 1;
-            Bg.play().catch(err => {
-                alert("Audio play failed: " + err);
-            });
             setTimeout (() => {
                 document.getElementById("container").style.display = "none";
 
