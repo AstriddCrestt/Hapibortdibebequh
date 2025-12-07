@@ -555,18 +555,12 @@
         const Yes = document.getElementById("yesBtn");
         const Bg = document.getElementById("bgMusic");
 
-        Yes.addEventListener("touchstart", (e) => {
-            StartTrnsition(e);
-            Bg.volume = 1;
-            Bg.play().catch(err => {
-                console.log("Touchstart prevented autoplay:", err);
-            });
-        });
-        Yes.addEventListener("click", (e) => {
-            if (!('ontouchstart' in window)) StartTrnsition(e);
-        });
+        Yes.addEventListener("touchstart", StartTrnsition);
+        Yes.addEventListener("click", StartTrnsition);
 
         function StartTrnsition() {
+            Bg.volume = 1;
+            Bg.play();
             document.getElementById("container").style.opacity = "0";
 
             setTimeout (() => {
