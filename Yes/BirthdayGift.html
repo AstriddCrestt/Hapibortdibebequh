@@ -562,8 +562,9 @@
             document.getElementById("container").style.opacity = "0";
 
             Bg.volume = 1;
-            Bg.play();
-
+            Bg.play().catch(err => {
+                alert("Audio play failed: " + err);
+            });
             setTimeout (() => {
                 document.getElementById("container").style.display = "none";
 
