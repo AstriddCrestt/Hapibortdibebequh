@@ -420,6 +420,7 @@
 </head>
 
 <body>
+    <audio id="bgMusic" src="hapibortdi.mp3" loop></audio>
     <div id="container">
         <img id="bearGif" src="Neutral.gif">
         <h1 id="question">Ready for your Birthday Surprise baby ko? hehe</h1>
@@ -477,7 +478,6 @@
             </div>
         </div>
     </div>
-    <audio id="bgMusic" src="hapibortdi.mp3" loop></audio>
     <audio id="giftMusic" src="GustoKita.mp3"></audio>
     <!-- No Button + Question Change + Gif Change + Yes Btn size-->
     <script>
@@ -616,18 +616,18 @@
             const giftmoosic = document.getElementById("giftMusic")
 
             let fade = setInterval(() => {
-                if (bgMusic.volume > 0.05) {
-                    bgMusic.volume -= 0.05;
+                if (bgmoosic.volume > 0.05) {
+                    bgmoosic.volume -= 0.05;
                 } else {
-                    bgMusic.pause();
+                    bgmoosic.pause();
                     clearInterval(fade);
                 }
             }, 100);
 
             // 🔊 Start second music after short delay
             setTimeout(() => {
-                giftMusic.volume = 1;
-                giftMusic.play();
+                giftmoosic.volume = 1;
+                giftmoosic.play();
             }, 500);
 
             // ✨ Fade out sparkle + glow + box before showing the letter
